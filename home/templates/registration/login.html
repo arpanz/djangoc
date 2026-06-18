@@ -3,7 +3,7 @@
 {% block content %}
 
 {% if form.errors %}
-  <p>Your username and password didn't match. Please try again.</p>
+<p>Your username and password didn't match. Please try again.</p>
 {% endif %}
 
 <form method="post" action="{% url 'login' %}">
@@ -15,17 +15,12 @@
 <input type="hidden" name="next" value="{{ next }}" />
 </form>
 
-    <script>
-        const passwordField = document.getElementById('id_password');
-        const showPasswordCheckbox = document.getElementById('show_password');
-
-        showPasswordCheckbox.addEventListener('change', function() {
-            if (this.checked) {
-                passwordField.type = 'text';
-            } else {
-                passwordField.type = 'password';
-            }
-        });
-    </script>
+<script>
+    const passwordField = document.getElementById('id_password');
+    const showPasswordCheckbox = document.getElementById('show_password');
+    showPasswordCheckbox.addEventListener('change', function() {
+        passwordField.type = this.checked ? 'text' : 'password';
+    });
+</script>
 
 {% endblock %}

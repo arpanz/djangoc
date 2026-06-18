@@ -1,14 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My Site</title>
-    <meta name="dj4e-session" content="6ae208ea">
-</head>
-<body>
-    <h1>Hello World - My Site</h1>
-    <p>6ae208ea</p>
-    <ul>
-        <li><p><a href="/hello/">Test the session</a></p></li>
-    </ul>
-</body>
-</html>
+{% extends "base_bootstrap.html" %}
+
+{% block content %}
+<h1>Hello World - My Site</h1>
+<p>6ae208ea</p>
+<ul>
+    <li><p><a href="/hello/">Test the session</a></p></li>
+    <li><a href="/autos">Autos CRUD</a></li>
+</ul>
+{% endblock %}
