@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-APP_NAME = "Chuck's Marketplace"   # Change
+APP_NAME = "Arpan's Marketplace"   # Change
 
 DJ4E_CODE = '162059e3022bdd1918e6aadf0332df79'
 
