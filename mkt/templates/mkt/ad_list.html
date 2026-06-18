@@ -1,6 +1,15 @@
 {% extends "base_menu.html" %}
 {% block content %}
 <h1>Ads</h1>
+<div style="float:right">
+<form>
+  <input type="text" placeholder="Search.." name="search"
+  {% if search %} value="{{ search }}" {% endif %}
+  >
+  <button type="submit"><i class="fa fa-search"></i></button>
+  <a href="{% url 'mkt:all' %}"><i class="fa fa-undo"></i></a>
+</form>
+</div>
 {% if ad_list %}
 <ul>
   {% for ad in ad_list %}
@@ -20,7 +29,11 @@
   {% endfor %}
 </ul>
 {% else %}
+  {% if search %}
+  <p>There are no ads that match your search criteria.</p>
+  {% else %}
   <p>There are no ads in the database.</p>
+  {% endif %}
 {% endif %}
 <p>
 {% if user.is_authenticated %}

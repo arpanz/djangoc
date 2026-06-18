@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 from django.db.utils import IntegrityError
+from django.db.models import Q
 
 from mkt.owner import OwnerListView, OwnerDeleteView
 from mkt.models import Ad, Comment, Fav
@@ -17,12 +18,20 @@ class AdListView(OwnerListView):
     template_name = 'mkt/ad_list.html'
 
     def get(self, request):
-        ad_list = Ad.objects.all()
+        strval = request.GET.get("search", False)
+        if strval:
+            query = Q(title__icontains=strval)
+            query.add(Q(text__icontains=strval), Q.OR)
+            query.add(Q(tags__name__in=[strval]), Q.OR)
+            ad_list = Ad.objects.filter(query).select_related().distinct().order_by('-updated_at')
+        else:
+            ad_list = Ad.objects.all().order_by('-updated_at')
+
         favorites = list()
         if request.user.is_authenticated:
             rows = request.user.favorite_ads.values('id')
             favorites = [row['id'] for row in rows]
-        ctx = {'ad_list': ad_list, 'favorites': favorites}
+        ctx = {'ad_list': ad_list, 'favorites': favorites, 'search': strval}
         return render(request, self.template_name, ctx)
 
 
@@ -56,6 +65,7 @@ class AdCreateView(LoginRequiredMixin, View):
         ad = form.save(commit=False)
         ad.owner = self.request.user
         ad.save()
+        form.save_m2m()  # Save tags
         return redirect(self.success_url)
 
 
@@ -79,6 +89,7 @@ class AdUpdateView(LoginRequiredMixin, View):
 
         ad = form.save(commit=False)
         ad.save()
+        form.save_m2m()  # Save tags
         return redirect(self.success_url)
 
 
