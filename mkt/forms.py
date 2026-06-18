@@ -9,15 +9,12 @@ class CreateForm(forms.ModelForm):
     max_upload_limit = 2 * 1024 * 1024
     max_upload_limit_text = naturalsize(max_upload_limit)
 
-    # Call this 'picture' so it gets copied from the form to the in-memory model
-    # It will not be the "bytes", it will be the "InMemoryUploadedFile"
-    # because we need to pull out things like content_type
     picture = forms.FileField(required=False, label='File to Upload <= '+max_upload_limit_text)
     upload_field_name = 'picture'
 
     class Meta:
         model = Ad
-        fields = ['title', 'text', 'picture', 'price']  # Picture is manual
+        fields = ['title', 'text', 'picture', 'price']
 
     # Validate the size of the picture
     def clean(self):
@@ -32,14 +29,17 @@ class CreateForm(forms.ModelForm):
     def save(self, commit=True):
         instance = super(CreateForm, self).save(commit=False)
 
-        # We only need to adjust picture if it is a freshly uploaded file
-        f = instance.picture   # Make a copy
-        if isinstance(f, InMemoryUploadedFile):  # Extract data from the form to the model
+        f = instance.picture
+        if isinstance(f, InMemoryUploadedFile):
             bytearr = f.read()
             instance.content_type = f.content_type
-            instance.picture = bytearr  # Overwrite with the actual image data
+            instance.picture = bytearr
 
         if commit:
             instance.save()
 
         return instance
+
+
+class CommentForm(forms.Form):
+    comment = forms.CharField(required=True, max_length=500, min_length=3, strip=True)

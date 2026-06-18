@@ -1,12 +1,12 @@
 from django.views import View
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from mkt.owner import OwnerListView, OwnerDetailView, OwnerDeleteView
-from mkt.models import Ad
-from mkt.forms import CreateForm
+from mkt.owner import OwnerListView, OwnerDeleteView
+from mkt.models import Ad, Comment
+from mkt.forms import CreateForm, CommentForm
 
 
 class AdListView(OwnerListView):
@@ -14,9 +14,16 @@ class AdListView(OwnerListView):
     template_name = 'mkt/ad_list.html'
 
 
-class AdDetailView(OwnerDetailView):
+class AdDetailView(View):
     model = Ad
     template_name = 'mkt/ad_detail.html'
+
+    def get(self, request, pk):
+        ad = get_object_or_404(Ad, id=pk)
+        comments = Comment.objects.filter(ad=ad).order_by('-updated_at')
+        comment_form = CommentForm()
+        context = {'ad': ad, 'comments': comments, 'comment_form': comment_form}
+        return render(request, self.template_name, context)
 
 
 class AdCreateView(LoginRequiredMixin, View):
@@ -35,7 +42,6 @@ class AdCreateView(LoginRequiredMixin, View):
             ctx = {'form': form}
             return render(request, self.template_name, ctx)
 
-        # Add owner to the model before saving
         ad = form.save(commit=False)
         ad.owner = self.request.user
         ad.save()
@@ -77,3 +83,20 @@ def stream_file(request, pk):
     response['Content-Length'] = len(ad.picture)
     response.write(ad.picture)
     return response
+
+
+class CommentCreateView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        ad = get_object_or_404(Ad, id=pk)
+        comment = Comment(text=request.POST['comment'], owner=request.user, ad=ad)
+        comment.save()
+        return redirect(reverse('mkt:ad_detail', args=[pk]))
+
+
+class CommentDeleteView(OwnerDeleteView):
+    model = Comment
+    template_name = 'mkt/comment_delete.html'
+
+    def get_success_url(self):
+        ad = self.object.ad
+        return reverse('mkt:ad_detail', args=[ad.id])
