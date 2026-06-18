@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'taggit',
     'home.apps.HomeConfig',
     'mkt.apps.MktConfig',
+    'hello.apps.HelloConfig',
 ]
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
