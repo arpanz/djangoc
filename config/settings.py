@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'hello.apps.HelloConfig',
     'polls.apps.PollsConfig',
     'autos.apps.AutosConfig',
+    'cats.apps.CatsConfig',
 ]
 
 MIDDLEWARE = [
