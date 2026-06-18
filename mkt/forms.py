@@ -14,7 +14,7 @@ class CreateForm(forms.ModelForm):
 
     class Meta:
         model = Ad
-        fields = ['title', 'text', 'picture', 'price']
+        fields = ['title', 'text', 'picture', 'price', 'tags']
 
     # Validate the size of the picture
     def clean(self):
@@ -37,6 +37,7 @@ class CreateForm(forms.ModelForm):
 
         if commit:
             instance.save()
+            self.save_m2m()  # Save tags (ManyToMany)
 
         return instance
 
