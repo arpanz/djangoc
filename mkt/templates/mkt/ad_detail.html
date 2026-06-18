@@ -9,7 +9,8 @@
 {% endif %}
 </span>
 <h1>{{ ad.title }}</h1>
-{% if ad.price %}<p><strong>Price:</strong> ${{ ad.price }}</p>{% endif %}
+{% if ad.price %}<p><b>Price: ${{ ad.price }}</b></p>
+{% else %}<p><b>Price:</b> (not set)</p>{% endif %}
 <p>{{ ad.text }}</p>
 <p><a href="{% url 'mkt:all' %}">All Ads</a></p>
 {% endblock %}
